@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { slugify } from '../../../utils/slugify';
+import { sortPostsByDate } from '../../../utils/blog';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	const tagMap = new Map<string, { tag: string; posts: typeof posts }>();
+
+	for (const post of posts) {
+		for (const tag of post.data.tags ?? []) {
+			const slug = slugify(tag);
+			const entry = tagMap.get(slug) ?? { tag, posts: [] };
+			entry.posts.push(post);
+			tagMap.set(slug, entry);
+		}
+	}
+
+	return Array.from(tagMap.entries()).map(([slug, value]) => ({
+		params: { tag: slug },
+		props: { tag: value.tag, posts: value.posts },
+	}));
+}
+
+const { tag, posts } = Astro.props;
+const sortedPosts = sortPostsByDate(posts);
+---
+
+<Layout title={`태그: ${tag}`} description={`${tag} 태그가 붙은 글입니다.`}>
+	<section class="container">
+		<h1>태그: {tag}</h1>
+		<div class="grid">
+			{sortedPosts.map((post) => (
+				<PostCard post={post} />
+			))}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.grid {
+		margin-top: 20px;
+		display: grid;
+		gap: 18px;
+	}
+</style>

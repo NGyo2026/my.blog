@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { formatMonth, getMonthKey, sortPostsByDate } from '../../../utils/blog';
+
+const posts = sortPostsByDate(
+	await getCollection('blog', ({ data }) => !data.draft)
+);
+
+const monthMap = new Map<string, number>();
+for (const post of posts) {
+	const key = getMonthKey(post.data.date);
+	monthMap.set(key, (monthMap.get(key) ?? 0) + 1);
+}
+
+const months = Array.from(monthMap.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+---
+
+<Layout title="아카이브" description="월별로 글을 둘러보세요.">
+	<section class="container">
+		<h1>월별 아카이브</h1>
+		<div class="card list">
+			{months.map(([key, count]) => {
+				const [year, month] = key.split('-');
+				const date = new Date(Number(year), Number(month) - 1, 1);
+				return (
+					<a class="item" href={`/blog/archive/${year}/${month}`}>
+						<span>{formatMonth(date)}</span>
+						<span class="count">{count}</span>
+					</a>
+				);
+			})}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.list {
+		margin-top: 20px;
+		padding: 20px;
+		display: grid;
+		gap: 12px;
+	}
+
+	.item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 12px 14px;
+		border-radius: 12px;
+		border: 1px solid var(--border);
+	}
+
+	.count {
+		color: var(--fg-muted);
+		font-size: 0.9rem;
+	}
+</style>

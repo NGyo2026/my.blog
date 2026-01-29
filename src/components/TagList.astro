@@ -1,0 +1,36 @@
+---
+import { slugify } from '../utils/slugify';
+
+const { items = [], basePath = '/blog/tags' } = Astro.props;
+const normalized = items.filter(Boolean);
+---
+
+{normalized.length ? (
+	<div class="tags">
+		{normalized.map((item) => (
+			<a class="tag" href={`${basePath}/${slugify(item)}`}>{item}</a>
+		))}
+	</div>
+) : null}
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.tag {
+		padding: 6px 12px;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--accent) 18%, transparent);
+		color: var(--accent);
+		font-size: 0.85rem;
+		transition: all 0.2s ease;
+	}
+
+	.tag:hover {
+		background: color-mix(in srgb, var(--accent) 30%, transparent);
+		color: var(--accent-strong);
+	}
+</style>

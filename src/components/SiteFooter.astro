@@ -1,0 +1,30 @@
+<footer class="footer">
+	<div class="container footer-inner">
+		<p>Astro로 제작 · 정적 페이지</p>
+		<p>© 2026 내 블로그</p>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		border-top: 1px solid var(--border);
+		background: var(--bg-soft);
+	}
+
+	.footer-inner {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 24px 0 32px;
+		color: var(--fg-muted);
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 720px) {
+		.footer-inner {
+			flex-direction: column;
+			gap: 8px;
+			text-align: center;
+		}
+	}
+</style>

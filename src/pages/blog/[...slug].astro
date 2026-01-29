@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import TagList from '../../components/TagList.astro';
+import { formatDate } from '../../utils/blog';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title} description={post.data.description ?? ''}>
+	<article class="container post">
+		<header class="post-header card">
+			<p class="date">{formatDate(post.data.date)}</p>
+			<h1>{post.data.title}</h1>
+			{post.data.description ? <p class="summary">{post.data.description}</p> : null}
+			<div class="meta">
+				<TagList items={post.data.tags} basePath="/blog/tags" />
+				<TagList items={post.data.categories} basePath="/blog/categories" />
+			</div>
+		</header>
+		<div class="card content">
+			<div class="prose">
+				<Content />
+			</div>
+		</div>
+	</article>
+</Layout>
+
+<style>
+	.post {
+		display: grid;
+		gap: 24px;
+		margin-top: 24px;
+	}
+
+	.post-header {
+		padding: 28px;
+		display: grid;
+		gap: 10px;
+	}
+
+	.date {
+		color: var(--fg-muted);
+		font-size: 0.9rem;
+		margin: 0;
+	}
+
+	.summary {
+		color: var(--fg-muted);
+		margin: 0;
+	}
+
+	.meta {
+		display: grid;
+		gap: 8px;
+	}
+
+	.content {
+		padding: 28px;
+	}
+</style>

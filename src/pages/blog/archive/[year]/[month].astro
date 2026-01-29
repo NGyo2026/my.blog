@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import { formatMonth, getMonthKey, sortPostsByDate } from '../../../../utils/blog';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	const monthMap = new Map<string, typeof posts>();
+
+	for (const post of posts) {
+		const key = getMonthKey(post.data.date);
+		const entry = monthMap.get(key) ?? [];
+		entry.push(post);
+		monthMap.set(key, entry);
+	}
+
+	return Array.from(monthMap.entries()).map(([key, monthPosts]) => {
+		const [year, month] = key.split('-');
+		return {
+			params: { year, month },
+			props: { year, month, posts: monthPosts },
+		};
+	});
+}
+
+const { year, month, posts } = Astro.props;
+const sortedPosts = sortPostsByDate(posts);
+const date = new Date(Number(year), Number(month) - 1, 1);
+---
+
+<Layout title={`아카이브: ${formatMonth(date)}`} description="월별 아카이브입니다.">
+	<section class="container">
+		<h1>{formatMonth(date)}</h1>
+		<div class="grid">
+			{sortedPosts.map((post) => (
+				<PostCard post={post} />
+			))}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.grid {
+		margin-top: 20px;
+		display: grid;
+		gap: 18px;
+	}
+</style>

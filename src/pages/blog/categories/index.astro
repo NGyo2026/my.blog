@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { getCategoryCounts } from '../../../utils/blog';
+import { slugify } from '../../../utils/slugify';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const categoryCounts = getCategoryCounts(posts);
+---
+
+<Layout title="카테고리" description="카테고리로 글을 둘러보세요.">
+	<section class="container">
+		<h1>카테고리</h1>
+		<div class="card list">
+			{Object.entries(categoryCounts).map(([category, count]) => (
+				<a class="item" href={`/blog/categories/${slugify(category)}`}>
+					<span>{category}</span>
+					<span class="count">{count}</span>
+				</a>
+			))}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.list {
+		margin-top: 20px;
+		padding: 20px;
+		display: grid;
+		gap: 12px;
+	}
+
+	.item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 12px 14px;
+		border-radius: 12px;
+		border: 1px solid var(--border);
+	}
+
+	.count {
+		color: var(--fg-muted);
+		font-size: 0.9rem;
+	}
+</style>

@@ -1,0 +1,50 @@
+---
+import { formatDate } from '../utils/blog';
+import TagList from './TagList.astro';
+
+const { post } = Astro.props;
+const { data, slug } = post;
+---
+
+<article class="card post-card">
+	<div class="meta">
+		<p class="date">{formatDate(data.date)}</p>
+		<h3 class="title">
+			<a href={`/blog/${slug}`}>{data.title}</a>
+		</h3>
+		{data.description ? <p class="description">{data.description}</p> : null}
+	</div>
+	<TagList items={data.tags} basePath="/blog/tags" />
+</article>
+
+<style>
+	.post-card {
+		padding: 24px;
+		display: grid;
+		gap: 16px;
+	}
+
+	.date {
+		margin: 0;
+		font-size: 0.9rem;
+		color: var(--fg-muted);
+	}
+
+	.title {
+		margin: 8px 0 0;
+		font-size: 1.35rem;
+	}
+
+	.title a {
+		color: var(--fg);
+	}
+
+	.title a:hover {
+		color: var(--accent);
+	}
+
+	.description {
+		margin: 10px 0 0;
+		color: var(--fg-muted);
+	}
+</style>

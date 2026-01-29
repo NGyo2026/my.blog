@@ -1,0 +1,109 @@
+---
+import blogIcon from '../../blogicon.png';
+
+const navItems = [
+	{ href: '/', label: '홈' },
+	{ href: '/about', label: '소개' },
+	{ href: '/blog', label: '블로그' },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href) => {
+	if (href === '/') return currentPath === '/';
+	return currentPath.startsWith(href);
+};
+---
+
+<header class="header">
+	<div class="container header-inner">
+		<a class="brand" href="/">
+			<img
+				class="brand-icon"
+				src={blogIcon.src}
+				width={blogIcon.width}
+				height={blogIcon.height}
+				alt="내 블로그 아이콘"
+				loading="eager"
+			/>
+			<span>내 블로그</span>
+		</a>
+		<nav class="nav">
+			{navItems.map((item) => (
+				<a class:list={['nav-link', { active: isActive(item.href) }]} href={item.href}>
+					{item.label}
+				</a>
+			))}
+		</nav>
+	</div>
+</header>
+
+<style>
+	.header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		backdrop-filter: blur(18px);
+		background: color-mix(in srgb, var(--bg) 75%, transparent);
+		border-bottom: 1px solid var(--border);
+	}
+
+	.header-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 20px 0;
+	}
+
+	.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+		font-size: 1.2rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+.brand-icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	border: 1px solid var(--border);
+	box-shadow: 0 6px 14px var(--shadow);
+	background: var(--card);
+	object-fit: cover;
+}
+
+	.nav {
+		display: flex;
+		gap: 18px;
+	}
+
+	.nav-link {
+		padding: 8px 14px;
+		border-radius: 999px;
+		color: var(--fg-muted);
+		transition: all 0.2s ease;
+	}
+
+	.nav-link:hover {
+		color: var(--fg);
+		background: color-mix(in srgb, var(--accent) 15%, transparent);
+	}
+
+	.nav-link.active {
+		color: var(--fg);
+		background: color-mix(in srgb, var(--accent) 25%, transparent);
+	}
+
+	@media (max-width: 720px) {
+		.header-inner {
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.brand-icon {
+			width: 30px;
+			height: 30px;
+		}
+	}
+</style>
