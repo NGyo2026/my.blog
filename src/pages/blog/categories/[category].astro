@@ -12,6 +12,9 @@ export async function getStaticPaths() {
 	for (const post of posts) {
 		for (const category of post.data.categories ?? []) {
 			const slug = slugify(category);
+			if (!slug) {
+				continue;
+			}
 			const entry = categoryMap.get(slug) ?? { category, posts: [] };
 			entry.posts.push(post);
 			categoryMap.set(slug, entry);
