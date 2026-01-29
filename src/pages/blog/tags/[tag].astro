@@ -12,6 +12,9 @@ export async function getStaticPaths() {
 	for (const post of posts) {
 		for (const tag of post.data.tags ?? []) {
 			const slug = slugify(tag);
+			if (!slug) {
+				continue;
+			}
 			const entry = tagMap.get(slug) ?? { tag, posts: [] };
 			entry.posts.push(post);
 			tagMap.set(slug, entry);
